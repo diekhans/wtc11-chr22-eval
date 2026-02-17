@@ -1,0 +1,70 @@
+
+* V3.0.0
+#+begin_src 
+mkdir -p ./results/v3.0.0
+(/usr/bin/time -v flair transcriptome -g data/GRCh38.chr22.genome.fa \
+     -f data/gencode.v38.annotation.chr22.gtf \
+      --shortread data/WTC11_all.SJ.out.tab \
+      -b data/WTC11.ENCFF370NFS.chr22.genomealigned.bam \
+      -o  results/v3.0.0/trans.v3.0.0 ) >&results/v3.0.0/transcriptiome.log &
+./bin/run-eval results/v3.0.0/trans.v3.0.0.isoforms.bed results/v3.0.0/eval >& ./results/v3.0.0/eval.log &
+#+end_src
+
+* dev1: dev as for 2026-02-10
+#+begin_src 
+mkdir -p ./results/dev1
+(/usr/bin/time -v flair transcriptome -g data/GRCh38.chr22.genome.fa \
+     -f data/gencode.v38.annotation.chr22.gtf \
+      --junction_tab data/WTC11_all.SJ.out.tab \
+      -b data/WTC11.ENCFF370NFS.chr22.genomealigned.bam \
+      -o  results/dev1/trans.dev1 ) >&results/dev1/transcriptiome.log &
+./bin/run-eval results/dev1/trans.dev1.isoforms.bed results/dev1/eval >& ./results/dev1/eval.log &
+#+end_src
+
+
+* mddev1: refactor as of 2026-02-09
+#+begin_src 
+mkdir -p ./results/mddev1
+(/usr/bin/time -v flair transcriptome -g data/GRCh38.chr22.genome.fa \
+     -f data/gencode.v38.annotation.chr22.gtf \
+      --junction_tab data/WTC11_all.SJ.out.tab \
+      -b data/WTC11.ENCFF370NFS.chr22.genomealigned.bam \
+      -o  results/mddev1/trans.mddev1 ) >&results/mddev1/transcriptiome.log &
+./bin/run-eval results/mddev1/trans.mddev1.isoforms.bed results/mddev1/eval >& ./results/mddev1/eval.log &
+#+end_src
+
+
+* mddev2: new splice junction as of 2026-02-09
+#+begin_src 
+mkdir -p ./results/mddev2
+(/usr/bin/time -v flair transcriptome -g data/GRCh38.chr22.genome.fa \
+     -f data/gencode.v38.annotation.chr22.gtf \
+      --junction_tab data/WTC11_all.SJ.out.tab \
+      -b data/WTC11.ENCFF370NFS.chr22.genomealigned.bam \
+      -o  results/mddev2/trans.mddev2 ) >&results/mddev2/transcriptiome.log &
+./bin/run-eval results/mddev2/trans.mddev2.isoforms.bed results/mddev2/eval >& ./results/mddev2/eval.log &
+#+end_src
+
+* eval
+#+begin_src 
+join -t "${tab}" results/dev1/eval.eval.tsv results/mddev2/eval.eval.tsv >dev1-mdev2.eval.tsv
+
+gffcompare -o analysis/dev1-mdev2.gffcmp.out results/dev1/trans.dev1.isoforms.gtf results/mddev2/trans.mddev2.isoforms.gtf 
+
+./bin/bedcmp --no-score results/dev1/trans.dev1.isoforms.bed results/mddev2/trans.mddev2.isoforms.bed analysis/dev1-mddev2.cmp.bed
+#+end_src
+
+diffs: 214 including score
+       207 ignore score
+* hub
+#+begin_src 
+ln -s /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/WTC11.ENCFF370NFS.chr22.genomealigned.b* hub/hg38/
+bedToBigBed -sort -fixScores -sizesIs2Bit hub/hg38/WTC11.ENCFF370NFS.chr22.genomealigned.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/WTC11.ENCFF370NFS.chr22.reads.bb
+./bin/sj-to-bed data/WTC11_all.SJ.out.tab > hub/hg38/WTC11_all.SJ.out.bed
+bedToBigBed -sort -fixScores -sizesIs2Bit hub/hg38/WTC11_all.SJ.out.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/WTC11_all.SJ.out.bb
+bedToBigBed -sort -sizesIs2Bit results/dev1/trans.dev1.isoforms.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/trans.dev1.isoforms.bb
+bedToBigBed -sort -sizesIs2Bit results/mddev2/trans.mddev2.isoforms.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/trans.mddev2.isoforms.bb
+bedToBigBed -sort -sizesIs2Bit  analysis/dev1-mddev2.cmp.bed https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/dev1-mddev2.cmp.bb
+hubCheck https://hgwdev.gi.ucsc.edu/~markd/flair/wtc11-chr22-eval/hub/hub.txt
+#+end_src
+

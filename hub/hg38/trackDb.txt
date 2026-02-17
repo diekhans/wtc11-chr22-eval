@@ -1,0 +1,66 @@
+track dev1_mddev2_isoforms_cmp
+type bigBed 12
+bigDataUrl dev1-mddev2.cmp.bb
+color 200,0,0
+shortLabel dev1 mddev2 cmp
+longLabel  dev1 mddev2 comparison
+visibility pack
+itemRgb off
+html ../empty.html
+priority 5
+
+track trans_dev1_isoforms
+type bigBed 12
+color 0,100,0
+bigDataUrl trans.dev1.isoforms.bb
+shortLabel Dev Isoforms
+longLabel Dev Isoforms
+visibility pack
+itemRgb off
+html ../empty.html
+priority 10
+
+track trans_mddev2_isoforms
+type bigBed 12
+bigDataUrl trans.mddev2.isoforms.bb
+color 0,0,204
+shortLabel New SJ isoforms
+longLabel  New splice junction code isoforms
+visibility pack
+itemRgb off
+html ../empty.html
+priority 20
+
+
+track WTC11_bam
+type bam
+bigDataUrl WTC11.ENCFF370NFS.chr22.genomealigned.bam
+shortLabel WTC11 reads
+longLabel WTC11 reads
+visibility hide
+bamColorMode off
+html ../empty.html
+priority 30
+
+track WTC11_bed
+type bigBed 12
+bigDataUrl WTC11.ENCFF370NFS.chr22.reads.bb
+shortLabel WTC11 reads BED
+longLabel WTC11 reads BED
+visibility hide
+html ../empty.html
+color 148,0,211
+priority 40
+
+track WTC11_SJ
+type bigBed 6
+bigDataUrl WTC11_all.SJ.out.bb
+shortLabel WTC11 SJ
+longLabel WTC11 Splice Junctions
+visibility hide
+html ../empty.html
+color 255,165,0
+priority 50
+
+
+

@@ -1,0 +1,6 @@
+hub WTC11_hub
+shortLabel WTC11 FLAIR Eval
+longLabel WTC11 FLAIR Eval
+genomesFile genomes.txt
+email markd@ucsc.edu
+descriptionUrl empty.html

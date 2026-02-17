@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+import argparse
+from pycbio.hgdata.bed import Bed, BedReader
+from pycbio.sys import fileOps, cli
+
+
+def parse_args():
+    desc = """compare BEDs by name determine differences
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--no-score", action='store_true',
+                        help="ignore score in comparsion")
+    parser.add_argument("bed1_file",
+                        help="input BED 1")
+    parser.add_argument("bed2_file",
+                        help="input BED 2")
+    parser.add_argument("diff_bed_file",
+                        help="bed that indicates ones that differ")
+    return cli.parseOptsArgsWithLogging(parser)
+
+
+def load_bed(bed_file):
+    beds_by_name = {}
+    for bed in BedReader(bed_file):
+        if bed.name in beds_by_name:
+            raise Exception(f"duplicate name `{bed.name}' in {bed_file}")
+        beds_by_name[bed.name] = bed
+    return beds_by_name
+
+def same_bed(opts, bed1, bed2):
+    if ((bed1.chrom != bed2.chrom) or
+        (bed1.chromStart != bed2.chromStart) or
+        (bed1.chromEnd != bed2.chromEnd) or
+        ((bed1.score != bed2.score) and (not opts.no_score)) or
+        (bed1.strand != bed2.strand) or
+        (len(bed1.blocks) != len(bed2.blocks))):
+        return False
+    for blk1, blk2 in zip(bed1.blocks, bed2.blocks):
+        if blk1 != blk2:
+            return False
+    return True
+
+def compare_pair(opts, bed1, bed2):
+    if bed1 is None:
+        return bed2
+    elif bed2 is None:
+        return bed1
+    elif not same_bed(opts, bed1, bed2):
+        return bed1
+    else:
+        return None
+
+def compare_by_name(opts, beds1_by_name, beds2_by_name):
+    diff_beds = []
+    for name in set(beds1_by_name.keys()) | set(beds2_by_name.keys()):
+        diff_bed = compare_pair(opts, beds1_by_name.get(name), beds2_by_name.get(name))
+        if diff_bed is not None:
+            diff_beds.append(diff_bed)
+    diff_beds.sort(key=Bed.genome_sort_key)
+    return diff_beds
+
+def bedcmp(opts, bed1_file, bed2_file, diff_bed_file):
+    beds1_by_name = load_bed(bed1_file)
+    beds2_by_name = load_bed(bed2_file)
+    diff_beds = compare_by_name(opts, beds1_by_name, beds2_by_name)
+
+    with fileOps.opengz(diff_bed_file, 'w') as fh:
+        for bed in diff_beds:
+            bed.write(fh)
+
+def main():
+    opts, args = parse_args()
+    bedcmp(opts, args.bed1_file, args.bed2_file, args.diff_bed_file)
+
+
+main()
