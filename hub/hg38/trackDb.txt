@@ -1,37 +1,108 @@
+##
+# dev1/mddev2 --sjc_support=1
+## 
 track dev1_mddev2_isoforms_cmp
 type bigBed 12
 bigDataUrl dev1-mddev2.cmp.bb
 color 200,0,0
-shortLabel dev1 mddev2 cmp
-longLabel  dev1 mddev2 comparison
-visibility pack
+shortLabel dev1 mddev2 cmp (sup=1)
+longLabel  dev1 mddev2 comparison (sup=1)
+visibility hide
 itemRgb off
 html ../empty.html
-priority 5
+priority 100
+mouseOver ${name} (${score})
+
+track dev1_mddev2_isoforms_chain-cmp
+type bigBed 12
+bigDataUrl dev1-mddev2.chain-cmp.bb
+color 200,0,64
+shortLabel dev1 mddev2 chain cmp (sup=1)
+longLabel  dev1 mddev2 chain comparison (sup=1)
+visibility hide
+itemRgb off
+html ../empty.html
+priority 110
+mouseOver ${name} (${score})
 
 track trans_dev1_isoforms
 type bigBed 12
 color 0,100,0
 bigDataUrl trans.dev1.isoforms.bb
-shortLabel Dev Isoforms
-longLabel Dev Isoforms
-visibility pack
+shortLabel Dev Isoforms (sup=1)
+longLabel Dev Isoforms (sup=1)
+visibility hide
 itemRgb off
 html ../empty.html
-priority 10
+priority 120
+mouseOver ${name} (${score})
 
 track trans_mddev2_isoforms
 type bigBed 12
 bigDataUrl trans.mddev2.isoforms.bb
 color 0,0,204
-shortLabel New SJ isoforms
-longLabel  New splice junction code isoforms
-visibility pack
+shortLabel New SJ isoforms (sup=1)
+longLabel  New splice junction code isoforms (sup=1)
+visibility hide
 itemRgb off
 html ../empty.html
-priority 20
+priority 130
+mouseOver ${name} (${score})
 
+##
+# dev2/mddev3 --sjc_support=2
+## 
+track dev2_mddev3_isoforms_cmp
+type bigBed 12
+bigDataUrl dev2-mddev3.cmp.bb
+color 200,0,0
+shortLabel dev2 mddev3 cmp (sup=2)
+longLabel  dev2 mddev3 comparison (sup=2)
+visibility hide
+itemRgb off
+html ../empty.html
+priority 200
+mouseOver ${name} (${score})
 
+track dev2_mddev3_isoforms_chain-cmp
+type bigBed 12
+bigDataUrl dev2-mddev3.chain-cmp.bb
+color 200,0,64
+shortLabel dev2 mddev3 chain cmp (sup=2)
+longLabel  dev2 mddev3 chain comparison (sup=2)
+visibility hide
+itemRgb off
+html ../empty.html
+priority 210
+mouseOver ${name} (${score})
+
+track trans_dev2_isoforms
+type bigBed 12
+color 0,100,0
+bigDataUrl trans.dev2.isoforms.bb
+shortLabel Dev Isoforms (sup=2)
+longLabel Dev Isoforms (sup=2)
+visibility hide
+itemRgb off
+html ../empty.html
+priority 220
+mouseOver ${name} (${score})
+
+track trans_mddev3_isoforms
+type bigBed 12
+bigDataUrl trans.mddev3.isoforms.bb
+color 0,0,204
+shortLabel New SJ isoforms (sup=2)
+longLabel  New splice junction code isoforms (sup=2)
+visibility hide
+itemRgb off
+html ../empty.html
+priority 230
+mouseOver ${name} (${score})
+
+##
+# primary data
+##
 track WTC11_bam
 type bam
 bigDataUrl WTC11.ENCFF370NFS.chr22.genomealigned.bam
@@ -40,7 +111,7 @@ longLabel WTC11 reads
 visibility hide
 bamColorMode off
 html ../empty.html
-priority 30
+priority 1000
 
 track WTC11_bed
 type bigBed 12
@@ -50,7 +121,7 @@ longLabel WTC11 reads BED
 visibility hide
 html ../empty.html
 color 148,0,211
-priority 40
+priority 1010
 
 track WTC11_SJ
 type bigBed 6
@@ -60,7 +131,8 @@ longLabel WTC11 Splice Junctions
 visibility hide
 html ../empty.html
 color 255,165,0
-priority 50
+priority 1020
+mouseOver ${name} (${score})
 
 
 

@@ -9,7 +9,9 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--no-score", action='store_true',
-                        help="ignore score in comparsion")
+                        help="ignore score in comparison")
+    parser.add_argument("--chain", action='store_true',
+                        help="only check chain, not ends")
     parser.add_argument("bed1_file",
                         help="input BED 1")
     parser.add_argument("bed2_file",
@@ -40,12 +42,29 @@ def same_bed(opts, bed1, bed2):
             return False
     return True
 
+def same_chain(opts, bed1, bed2):
+    if ((bed1.chrom != bed2.chrom) or
+        ((bed1.score != bed2.score) and (not opts.no_score)) or
+        (bed1.strand != bed2.strand) or
+        (len(bed1.blocks) != len(bed2.blocks))):
+        return False
+    prev1 = bed1.blocks[0]
+    prev2 = bed2.blocks[0]
+    for blk1, blk2 in zip(bed1.blocks[1:], bed2.blocks[1:]):
+        if (prev1.end, blk1.start) != (prev2.end, blk2.start):
+            return False
+        prev1 = blk1
+        prev2 = blk2
+    return True
+
 def compare_pair(opts, bed1, bed2):
     if bed1 is None:
         return bed2
     elif bed2 is None:
         return bed1
-    elif not same_bed(opts, bed1, bed2):
+    elif (not opts.chain) and (not same_bed(opts, bed1, bed2)):
+        return bed1
+    elif opts.chain and (not same_chain(opts, bed1, bed2)):
         return bed1
     else:
         return None

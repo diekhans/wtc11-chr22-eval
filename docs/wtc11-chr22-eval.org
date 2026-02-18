@@ -45,26 +45,80 @@ mkdir -p ./results/mddev2
 ./bin/run-eval results/mddev2/trans.mddev2.isoforms.bed results/mddev2/eval >& ./results/mddev2/eval.log &
 #+end_src
 
-* eval
+* dev2: dev as for 2026-02-10, requiring 2 reads
 #+begin_src 
-join -t "${tab}" results/dev1/eval.eval.tsv results/mddev2/eval.eval.tsv >dev1-mdev2.eval.tsv
+mkdir -p ./results/dev2
+(/usr/bin/time -v flair transcriptome -g data/GRCh38.chr22.genome.fa \
+     --sjc_support 2 \
+     -f data/gencode.v38.annotation.chr22.gtf \
+      --junction_tab data/WTC11_all.SJ.out.tab \
+      -b data/WTC11.ENCFF370NFS.chr22.genomealigned.bam \
+      -o  results/dev2/trans.dev2 ) >&results/dev2/transcriptiome.log &
+./bin/run-eval results/dev2/trans.dev2.isoforms.bed results/dev2/eval >& ./results/dev2/eval.log &
+#+end_src
 
-gffcompare -o analysis/dev1-mdev2.gffcmp.out results/dev1/trans.dev1.isoforms.gtf results/mddev2/trans.mddev2.isoforms.gtf 
 
+* mddev3: new splice junction as of 2026-02-09, -10, requiring 2 reads
+#+begin_src 
+mkdir -p ./results/mddev3
+(/usr/bin/time -v flair transcriptome -g data/GRCh38.chr22.genome.fa \
+     --sjc_support 2 \
+     -f data/gencode.v38.annotation.chr22.gtf \
+      --junction_tab data/WTC11_all.SJ.out.tab \
+      -b data/WTC11.ENCFF370NFS.chr22.genomealigned.bam \
+      -o  results/mddev3/trans.mddev3 ) >&results/mddev3/transcriptiome.log &
+./bin/run-eval results/mddev3/trans.mddev3.isoforms.bed results/mddev3/eval >& ./results/mddev3/eval.log &
+#+end_src
+
+* eval
+** dev1-mddev2
+#+begin_src 
 ./bin/bedcmp --no-score results/dev1/trans.dev1.isoforms.bed results/mddev2/trans.mddev2.isoforms.bed analysis/dev1-mddev2.cmp.bed
+./bin/bedcmp --chain --no-score results/dev1/trans.dev1.isoforms.bed results/mddev2/trans.mddev2.isoforms.bed analysis/dev1-mddev2.chain-cmp.bed
 #+end_src
 
 diffs: 214 including score
        207 ignore score
+       201 chain noscore
+
+** dev2-mddev3
+#+begin_src 
+./bin/bedcmp --no-score results/dev2/trans.dev2.isoforms.bed results/mddev3/trans.mddev3.isoforms.bed analysis/dev2-mddev3.cmp.bed
+./bin/bedcmp --chain --no-score results/dev2/trans.dev2.isoforms.bed results/mddev3/trans.mddev3.isoforms.bed analysis/dev2-mddev3.chain-cmp.bed
+#+end_src
+
+   47 dev2-mddev3.cmp.bed
+   42 dev2-mddev3.chain-cmp.bed
+
 * hub
 #+begin_src 
 ln -s /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/WTC11.ENCFF370NFS.chr22.genomealigned.b* hub/hg38/
 bedToBigBed -sort -fixScores -sizesIs2Bit hub/hg38/WTC11.ENCFF370NFS.chr22.genomealigned.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/WTC11.ENCFF370NFS.chr22.reads.bb
 ./bin/sj-to-bed data/WTC11_all.SJ.out.tab > hub/hg38/WTC11_all.SJ.out.bed
 bedToBigBed -sort -fixScores -sizesIs2Bit hub/hg38/WTC11_all.SJ.out.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/WTC11_all.SJ.out.bb
+
 bedToBigBed -sort -sizesIs2Bit results/dev1/trans.dev1.isoforms.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/trans.dev1.isoforms.bb
 bedToBigBed -sort -sizesIs2Bit results/mddev2/trans.mddev2.isoforms.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/trans.mddev2.isoforms.bb
 bedToBigBed -sort -sizesIs2Bit  analysis/dev1-mddev2.cmp.bed https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/dev1-mddev2.cmp.bb
+bedToBigBed -sort -sizesIs2Bit  analysis/dev1-mddev2.chain-cmp.bed https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/dev1-mddev2.chain-cmp.bb
+
 hubCheck https://hgwdev.gi.ucsc.edu/~markd/flair/wtc11-chr22-eval/hub/hub.txt
 #+end_src
 
+add require two tracks
+#+begin_src 
+bedToBigBed -sort -sizesIs2Bit results/dev2/trans.dev2.isoforms.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/trans.dev2.isoforms.bb
+bedToBigBed -sort -sizesIs2Bit results/mddev3/trans.mddev3.isoforms.bed  https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/trans.mddev3.isoforms.bb
+bedToBigBed -sort -sizesIs2Bit  analysis/dev2-mddev3.cmp.bed https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/dev2-mddev3.cmp.bb
+bedToBigBed -sort -sizesIs2Bit  analysis/dev2-mddev3.chain-cmp.bed https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit hub/hg38/dev2-mddev3.chain-cmp.bb
+
+hubCheck https://hgwdev.gi.ucsc.edu/~markd/flair/wtc11-chr22-eval/hub/hub.txt
+
+#+end_src
+
+* Summary
+
+| compare  | sup=1 | sup=2 |
+|----------+-------+-------|
+| isoforms |   207 |  47   |
+| chains   |   201 |  42   |
