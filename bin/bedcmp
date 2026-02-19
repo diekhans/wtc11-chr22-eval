@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument("--no-score", action='store_true',
                         help="ignore score in comparison")
     parser.add_argument("--chain", action='store_true',
-                        help="only check chain, not ends")
+                        help="check by intron chai check chain, not ends")
     parser.add_argument("bed1_file",
                         help="input BED 1")
     parser.add_argument("bed2_file",

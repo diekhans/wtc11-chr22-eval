@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+import argparse
+from collections import defaultdict
+from pycbio.hgdata.bed import Bed, BedReader
+from pycbio.sys import fileOps, cli
+
+COLOR1 = '0,100,0'
+COLOR2 = '0,0,204'
+
+def parse_args():
+    desc = """compare BEDs by intron chain
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("bed1_file",
+                        help="input BED 1")
+    parser.add_argument("bed2_file",
+                        help="input BED 2")
+    parser.add_argument("diff_bed_file",
+                        help="bed that indicates ones that differ")
+    return cli.parseOptsArgsWithLogging(parser)
+
+def mk_intron_chain_key(bed):
+    chain = []
+    for iblk in range(1, len(bed.blocks)):
+        chain.append((bed.blocks[iblk - 1].end, bed.blocks[iblk].start))
+
+    return (bed.chrom, bed.strand, tuple(chain))
+
+def load_bed(bed_file):
+    beds_by_chain = defaultdict(list)
+    for bed in BedReader(bed_file):
+        if len(bed.blocks) > 1:
+            beds_by_chain[mk_intron_chain_key(bed)].append(bed)
+    beds_by_chain.default_factory = None
+    return beds_by_chain
+
+def select_unique_chains(beds_by_chain, common_intron_chain_keys, color):
+    selected = []
+    for key, beds in beds_by_chain.items():
+        if key not in common_intron_chain_keys:
+            for bed in beds:
+                bed.itemRgb = color
+                selected.append(bed)
+    return selected
+
+def compare_by_chain(opts, beds1_by_chain, beds2_by_chain):
+    common_intron_chain_keys = frozenset(beds1_by_chain.keys()) & frozenset(beds2_by_chain.keys())
+    diff_beds = (select_unique_chains(beds1_by_chain, common_intron_chain_keys, COLOR1) +
+                 select_unique_chains(beds2_by_chain, common_intron_chain_keys, COLOR2))
+    diff_beds.sort(key=Bed.genome_sort_key)
+    return diff_beds
+
+def bed_intro_cmp(opts, bed1_file, bed2_file, diff_bed_file):
+    beds1_by_chain = load_bed(bed1_file)
+    beds2_by_chain = load_bed(bed2_file)
+    diff_beds = compare_by_chain(opts, beds1_by_chain, beds2_by_chain)
+
+    with fileOps.opengz(diff_bed_file, 'w') as fh:
+        for bed in diff_beds:
+            bed.write(fh)
+
+def main():
+    opts, args = parse_args()
+    bed_intro_cmp(opts, args.bed1_file, args.bed2_file, args.diff_bed_file)
+
+
+main()

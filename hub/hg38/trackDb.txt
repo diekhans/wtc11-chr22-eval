@@ -16,11 +16,10 @@ mouseOver ${name} (${score})
 track dev1_mddev2_isoforms_chain-cmp
 type bigBed 12
 bigDataUrl dev1-mddev2.chain-cmp.bb
-color 200,0,64
 shortLabel dev1 mddev2 chain cmp (sup=1)
 longLabel  dev1 mddev2 chain comparison (sup=1)
 visibility hide
-itemRgb off
+itemRgb on
 html ../empty.html
 priority 110
 mouseOver ${name} (${score})
@@ -67,11 +66,10 @@ mouseOver ${name} (${score})
 track dev2_mddev3_isoforms_chain-cmp
 type bigBed 12
 bigDataUrl dev2-mddev3.chain-cmp.bb
-color 200,0,64
 shortLabel dev2 mddev3 chain cmp (sup=2)
 longLabel  dev2 mddev3 chain comparison (sup=2)
 visibility hide
-itemRgb off
+itemRgb on
 html ../empty.html
 priority 210
 mouseOver ${name} (${score})
