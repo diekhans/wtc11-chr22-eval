@@ -1,0 +1,37 @@
+
+
+* data files:
+** GRCh38.chr22.genome.fa -> /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/GRCh38.chr22.genome.fa
+GRCh38.chr22.genome.fa.fai
+** PacBio cDNA
+WTC11.ENCFF370NFS.chr22.genomealigned.bam -> /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/WTC11.ENCFF370NFS.chr22.genomealigned.bam
+WTC11.ENCFF370NFS.chr22.genomealigned.bam.bai -> /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/WTC11.ENCFF370NFS.chr22.genomealigned.bam.bai
+WTC11.ENCFF370NFS.chr22.genomealigned.bed -> /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/WTC11.ENCFF370NFS.chr22.genomealigned.bed
+** WTC11_all.SJ.out.tab -> /private/groups/brookslab/cafelton/lrgasp-wtc11/WTC11_all.SJ.out.tab
+** gencode.v38.annotation.chr22.gtf -> /private/groups/brookslab/cafelton/testflairanyvcf/simNMD/smallchr22test/gencode.v38.annotation.chr22.gtf
+** ONT cDNA
+WTC11.ENCFF023EXJ.chr22.genomealigned.bam
+WTC11.ENCFF023EXJ.chr22.genomealigned.bam.bai
+from /private/groups/brookslab/cafelton/lrgasp-wtc11/nanoporecdna/nanoporecdna-1.genomealigned.bam chr22
+
+
+* output structure:
+results/{transcriptome,spliceevents}
+name/name - name of run
+
+
+*  processes
+nice ./bin/run-transcriptome mddev pb ../flair-mddev &
+nice ./bin/run-transcriptome mddev ont ../flair-mddev &
+
+nice ./bin/run-transcriptome 3.0 pb ../flair-master &
+nice ./bin/run-transcriptome 3.0 ont ../flair-master &
+
+nice ./bin/run-transcriptome dev pb ../flair-dev &
+nice ./bin/run-transcriptome dev ont ../flair-dev &
+
+
+* profiling
+conda install -c conda-forge austin
+nice ./bin/run-transcriptome --austin mddev-prof pb ../flair-mddev &
+

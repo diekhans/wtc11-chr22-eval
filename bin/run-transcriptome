@@ -1,0 +1,63 @@
+#!/bin/bash
+set -beEu -o pipefail
+bindir=$(dirname $0)
+
+GENOME_FA=data/GRCh38.chr22.genome.fa
+ONT_CDNA_BAM=data/WTC11.ENCFF023EXJ.chr22.genomealigned.bam
+PB_CDNA_BAM=data/WTC11.ENCFF370NFS.chr22.genomealigned.bam
+JUNCTIONS=data/WTC11_all.SJ.out.tab
+ANNOTATION=data/gencode.v38.annotation.chr22.gtf
+
+austin=0
+while [[ $# -gt 0 ]] ; do
+    case "$1" in
+        --austin) austin=1 ; shift ;;
+        -*) echo "unknown option: $1" >&2 ; exit 1 ;;
+        *) break ;;
+    esac
+done
+
+if [[ $# != 3 ]] ; then
+    echo "wrong # args: $0 [--austin] name dataset flair_dir" >&2
+    exit 1
+fi
+name="$1" ; shift
+dataset="$1" ; shift
+flair_dir="$1" ; shift
+
+case "${dataset}" in
+    ont) BAM=${ONT_CDNA_BAM} ;;
+    pb) BAM=${PB_CDNA_BAM} ;;
+    *) echo "Error invalid dataset '${dataset}', expected 'ont' or 'pb'" >&2
+       exit 1;;
+esac
+
+outdir="results/transcriptome/${dataset}/${name}"
+outprefix="${outdir}/${name}"
+logfile=${outprefix}.log
+
+flair_prog="${flair_dir}/bin/flair"
+if [[ ! -e ${flair_prog} ]] ; then
+   echo "Error: flair not found ${flair_prog}" >&2
+   exit 1
+fi
+
+export PATH="${flair_dir}:${PATH}"
+export PYTHONPATH="${flair_dir}/src:${PYTHONPATH:=}"
+mkdir -p ${outdir}
+
+if [[ ${austin} -eq 1 ]] ; then
+    prof="austin -C -o ${outprefix}.austin"
+else
+    prof="/usr/bin/time --verbose"
+fi
+
+set -x
+exec >& ${logfile}
+eval ${prof} \
+flair transcriptome \
+  -b=${BAM} \
+  --genome=${GENOME_FA} \
+  --junction_tab=${JUNCTIONS} \
+  --gtf=${ANNOTATION} \
+  --output=${outprefix} 
