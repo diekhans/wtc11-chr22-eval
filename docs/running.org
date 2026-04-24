@@ -33,5 +33,14 @@ nice ./bin/run-transcriptome dev ont ../flair-dev &
 
 * profiling
 conda install -c conda-forge austin
+conda install austin-python
 nice ./bin/run-transcriptome --austin mddev-prof pb ../flair-mddev &
 
+** for speedscore
+austin2speedscope results/transcriptome/pb/mddev-prof/mddev-prof.austin results/transcriptome/pb/mddev-prof/mddev-prof.austin.json
+
+conda install nodejs
+npm install -g speedscope
+
+/Users/markd/.npm-global/lib/node_modules/speedscope/bin/cli.mjs
+# then drag and drop json
