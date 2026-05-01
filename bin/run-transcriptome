@@ -52,8 +52,8 @@ else
     prof="/usr/bin/time --verbose"
 fi
 
-set -x
 exec >& ${logfile}
+set -x
 eval ${prof} \
 flair transcriptome \
   -b=${BAM} \

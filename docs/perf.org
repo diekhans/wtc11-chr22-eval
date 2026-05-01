@@ -1,0 +1,14 @@
+
+* nice ./bin/run-transcriptome mddev-intervaltree pb ../flair-mddev &
+	User time (seconds): 770.52
+	System time (seconds): 7.09
+	Percent of CPU this job got: 209%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 6:11.93
+
+* nice ./bin/run-transcriptome mddev-ruranges pb ../flair-mddev &
+	User time (seconds): 9049.68
+	System time (seconds): 11.39
+	Percent of CPU this job got: 104%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:24:16
+
+* nice ./bin/run-transcriptome --austin mddev-ruranges-perf pb ../flair-mddev &
