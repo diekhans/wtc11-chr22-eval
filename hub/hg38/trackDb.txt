@@ -104,8 +104,8 @@ mouseOver ${name} (${score})
 track WTC11_bam
 type bam
 bigDataUrl WTC11.ENCFF370NFS.chr22.genomealigned.bam
-shortLabel WTC11 reads
-longLabel WTC11 reads
+shortLabel WTC11 PB reads
+longLabel WTC11 PacBio reads
 visibility hide
 bamColorMode off
 html ../empty.html
@@ -114,8 +114,8 @@ priority 1000
 track WTC11_bed
 type bigBed 12
 bigDataUrl WTC11.ENCFF370NFS.chr22.reads.bb
-shortLabel WTC11 reads BED
-longLabel WTC11 reads BED
+shortLabel WTC11 PB reads BED
+longLabel WTC11 PB reads BED
 visibility hide
 html ../empty.html
 color 148,0,211
